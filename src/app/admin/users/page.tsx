@@ -35,11 +35,11 @@ export default function UsersPage() {
 
     if (loading || !user || !user.isSuperUser) return null;
 
-    const handleRoleChange = (userId, newRole) => {
+    const handleRoleChange = (userId: number, newRole: string) => {
         setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
     };
 
-    const getBadgeClass = (role) => {
+    const getBadgeClass = (role: string) => {
         switch (role) {
             case "admin": return styles.badgeAdmin;
             case "editor": return styles.badgeEditor;
@@ -50,7 +50,7 @@ export default function UsersPage() {
         }
     };
 
-    const getRoleLabel = (role) => ROLES.find(r => r.value === role)?.label || role;
+    const getRoleLabel = (role: string) => ROLES.find(r => r.value === role)?.label || role;
 
     return (
         <div className={`container ${styles.container}`}>

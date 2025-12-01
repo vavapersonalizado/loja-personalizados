@@ -8,8 +8,6 @@ import styles from "./navbar.module.css";
 export default function Navbar() {
     const { user, logout } = useAuth();
 
-    if (!user) return null;
-
     return (
         <header className={styles.header}>
             <div className={`container ${styles.nav}`}>
@@ -18,15 +16,21 @@ export default function Navbar() {
                 </Link>
 
                 <div className={styles.actions}>
-                    {user.isSuperUser && <ModeSwitcher />}
-
-                    <span className={styles.userInfo}>
-                        Olá, {user.name}
-                    </span>
-
-                    <button onClick={logout} className="btn btn-outline" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>
-                        Sair
-                    </button>
+                    {user ? (
+                        <>
+                            {user.isSuperUser && <ModeSwitcher />}
+                            <span className={styles.userInfo}>
+                                Olá, {user.name}
+                            </span>
+                            <button onClick={logout} className="btn btn-outline" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>
+                                Sair
+                            </button>
+                        </>
+                    ) : (
+                        <Link href="/login" className="btn btn-primary">
+                            Entrar
+                        </Link>
+                    )}
                 </div>
             </div>
         </header>

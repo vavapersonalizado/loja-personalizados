@@ -1,64 +1,49 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Check for stored user on mount
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (status === "loading") {
+      setLoading(true);
+      return;
     }
+
+    if (session?.user) {
+      const userData = {
+        email: session.user.email,
+        name: session.user.name || session.user.email?.split('@')[0],
+        role: session.user.email === "projetovanvava@gmail.com" ? "admin" : "client",
+        isSuperUser: session.user.email === "projetovanvava@gmail.com",
+        image: session.user.image,
+      };
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+    } else {
+      setUser(null);
+      localStorage.removeItem("user");
+    }
+
     setLoading(false);
-  }, []);
-
-  const login = (email) => {
-    let userData;
-    
-    // Hardcoded Super User
-    if (email === "projetovanvava@gmail.com") {
-      userData = {
-        email,
-        name: "Super Admin",
-        role: "admin",
-        isSuperUser: true, // Special flag for mode switching
-      };
-    } else {
-      // Mock regular user
-      userData = {
-        email,
-        name: "Cliente Exemplo",
-        role: "client",
-        isSuperUser: false,
-      };
-    }
-
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    
-    // Redirect based on role
-    if (userData.isSuperUser) {
-      router.push("/admin/users"); // Default to admin for super user initially
-    } else {
-      router.push("/");
-    }
-  };
+  }, [session, status]);
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    router.push("/login");
+    signOut({ callbackUrl: "/login" });
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

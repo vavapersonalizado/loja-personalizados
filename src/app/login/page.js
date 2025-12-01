@@ -1,38 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { signIn } from "next-auth/react";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
-    const [email, setEmail] = useState("");
-    const { login } = useAuth();
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (email) {
-            login(email);
-        }
-    };
-
     const handleGoogleLogin = () => {
-        // Simulate Google Login
-        const mockGoogleEmail = "usuario.google@gmail.com";
-        login(mockGoogleEmail);
+        signIn("google", { callbackUrl: "/" });
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.card}>
                 <h1 className={styles.title}>Bem-vindo de volta</h1>
-                <p className={styles.subtitle}>Entre com seu email ou conta Google</p>
+                <p className={styles.subtitle}>Entre com sua conta Google</p>
 
                 <div className={styles.form}>
                     <button
                         type="button"
                         onClick={handleGoogleLogin}
-                        className="btn btn-outline"
-                        style={{ width: '100%', display: 'flex', gap: '0.5rem', marginBottom: '1rem', alignItems: 'center', justifyContent: 'center' }}
+                        className="btn btn-primary"
+                        style={{ width: '100%', display: 'flex', gap: '0.5rem', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -42,29 +29,6 @@ export default function LoginPage() {
                         </svg>
                         Entrar com Google
                     </button>
-
-                    <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--muted-foreground)', margin: '0.5rem 0' }}>
-                        OU CONTINUE COM EMAIL
-                    </div>
-
-                    <form onSubmit={handleSubmit} className={styles.form}>
-                        <div>
-                            <label htmlFor="email" className={styles.label}>Email</label>
-                            <input
-                                id="email"
-                                type="email"
-                                className="input"
-                                placeholder="seu@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <button type="submit" className="btn btn-primary button">
-                            Entrar
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
